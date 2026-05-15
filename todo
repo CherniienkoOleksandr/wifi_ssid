@@ -1,0 +1,9 @@
+--> add new ssid
+--> list available ssids
+--> quick switch between ssid
+--> tab completor
+--> man help pager
+
+/etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
+
+systemctl --system reload-or-restart wpa_supplicant@wlpp5s0.service
