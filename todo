@@ -1,8 +1,16 @@
---> add new ssid
---> list available ssids
---> quick switch between ssid
---> tab completor
+
+
+-> tab completor
+
+-> add new ssid
+
+
 --> man help pager
+	gz extension 
+	/usr/share/man[0-9]
+
+-> list available ssids
+-> quick switch between ssid
 
 /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
 
