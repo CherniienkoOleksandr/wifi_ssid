@@ -1,17 +1,20 @@
+*) case statement
+	help quick instructions
 
+--> errrors
 
--> tab completor
+--> check if wpa
 
--> add new ssid
-
+--> python??
 
 --> man help pager
 	gz extension 
 	/usr/share/man[0-9]
 
--> list available ssids
 -> quick switch between ssid
+	-> tab completor
+
+-> list available ssids
 
 /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
-
 systemctl --system reload-or-restart wpa_supplicant@wlpp5s0.service

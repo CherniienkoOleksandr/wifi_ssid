@@ -1,0 +1,71 @@
+# Simple, commented Makefile for a C project with multiple .c files
+# Usage:
+#   make          # build executable
+#   make run      # build then run
+#   make debug    # build with debug symbols
+#   make clean    # remove build artifacts
+
+# Compiler and flags
+CC := gcc                      # C compiler
+CFLAGS := -Wall -Wextra -std=c11   # common compile flags
+LDFLAGS :=                      # linker flags (libs go here)
+DEBUGFLAGS := -g -O0            # flags for debug builds
+RELEASEFLAGS := -O2             # flags for release builds
+
+# Project layout
+SRC_DIR := src
+OBJ_DIR := build
+BIN := myprog                    # final executable name
+
+# Find all .c sources (recursively in SRC_DIR)
+SRCS := $(shell find $(SRC_DIR) -name '*.c')
+# Convert source filenames to object filenames in OBJ_DIR
+OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+
+# Default target
+.PHONY: all
+all: CFLAGS += $(RELEASEFLAGS)   # append release flags for default build
+all: $(BIN)
+
+# Link objects into the final binary
+$(BIN): $(OBJS)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+	@echo "Linked $@"
+
+# Compile .c -> .o (preserve directory structure under OBJ_DIR)
+# e.g., src/foo/bar.c -> build/foo/bar.o
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Debug build target
+.PHONY: debug
+debug: CFLAGS += $(DEBUGFLAGS)
+debug: clean $(BIN)
+	@echo "Built debug: $(BIN)"
+
+# Run the program (build first)
+.PHONY: run
+run: all
+	./$(BIN)
+
+# Clean build artifacts
+.PHONY: clean
+clean:
+	@rm -rf $(OBJ_DIR) $(BIN)
+	@echo "Cleaned build artifacts"
+
+# Install (example: copy binary to /usr/local/bin)
+.PHONY: install
+install: all
+	install -m 0755 $(BIN) /usr/local/bin/$(BIN)
+
+# Print variables for debugging the Makefile
+.PHONY: info
+info:
+	@echo "CC = $(CC)"
+	@echo "CFLAGS = $(CFLAGS)"
+	@echo "SRCS = $(SRCS)"
+	@echo "OBJS = $(OBJS)"
+

@@ -1,57 +1,45 @@
 #!/bin/bash
-# Get the option value from the command line arguments script version 1.0
-# Author: al
+# v1.3 
+# Author: al and he
 # Fri May 15 11:12:35 PM EEST 2026
 #
-EXIT_CODE=0
-passwd () {
-	echo password one 
-	EXIT_CODE=6
-	
-}
-new() {
-	echo entered ssdi, if passwd return not 5, ssid will be change
-	passwd
-	if [ $EXIT_CODE == 5 ]; then
-		echo one
-	else 
-		echo "netu ddone"
-		exit 1
-	fi
-		
-}
 
-if [ $# == 0 ]; then
-	new;
-	passwd; 
-	exit 
-fi
+convert_to_json() {
+	$py_tool wpa-to-json < $config_file > $wpa_json
+}
+convert_to_config() {
+	$py_tool json-to-wpa < $wpa_json > $config_file
+}
+wpa_json=/tmp/wpa.json
+wpa_tmp_json=/tmp/tmp_wpa.json
+config_file=/etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
+py_tool=/home/al/Git/wifi_ssid/wifi_conf_tool.py
+wifi_man=/home/al/Git/wifi_ssid/ls.1
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-	echo "use help"
+if [ $# != 1 ]; then
+	echo "see man $wifi_man"
 else
 	case $1 in
 		-n|--new-ssid)
-			SSID=$2
-			echo "SSID: $SSID"
-			# проверяем $2 и $3 на ввод сразу
-			# read sid, and password
-			# -> save
-			# условие, если $2 не пустой, то вводим пароль
-			#
+			convert_to_json
+			read -p "Enter a ssid: " ssid
+			echo "$1"
+			echo "$2"
+			read -p "Enter a password: " psk
+			jq '(.networks[0]) |=(.ssid="'$ssid'" | .psk="'$psk'")' $wpa_json > $wpa_tmp_json && mv $wpa_tmp_json $wpa_json
+			convert_to_config
 			;;
 		-c|--current)
-			echo "current ssid"
+			echo current ssid,psk:
+            convert_to_json
+			jq -r '.networks[] | "\(.ssid) \(.psk)"' < $wpa_json
 			;;
 		-l|--list)
-			echo "list"
-			;;
-		-s|--ssid)
-			echo "enter ssid"
+			echo "list, not available yet"
 			;;
 		*)
-			echo "something else"
-			exit 1;
+			echo "Use: $(basename "$0") [-h|--help]"
+			exit 0;
 			;;
 	esac
 fi
