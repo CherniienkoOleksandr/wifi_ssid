@@ -1,2 +1,2 @@
 
-# wifi ssid switcher (arch, systemd, wpa_supplicant)
+# wifi ssid switcher (arch, systemd, wpa_supplicant@)

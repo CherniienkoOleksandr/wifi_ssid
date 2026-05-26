@@ -1,7 +1,10 @@
+--> переделать ./wifi_conf_tool.py
+	или уже легче пропарсить на с
 *) case statement
 	help quick instructions
 
 --> errrors
+	trap ERR
 
 --> check if wpa
 
