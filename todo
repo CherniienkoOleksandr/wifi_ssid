@@ -1,12 +1,13 @@
---> переделать ./wifi_conf_tool.py
-	или уже легче пропарсить на с
-*) case statement
+--> check if wpa
+	--> errrors
+		trap ERR
+
+--> rewrite ./wifi_conf_tool.py
+
+*) args
 	help quick instructions
 
---> errrors
-	trap ERR
 
---> check if wpa
 
 --> python??
 

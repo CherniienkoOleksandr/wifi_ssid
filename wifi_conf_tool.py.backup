@@ -28,6 +28,10 @@ def parse_key_value(line: str) -> tuple[str, str] | None:
     return key, value
 
 
+def needs_quoting(value: str) -> bool:
+    return bool(value) and (' ' in value or '\t' in value or '#' in value)
+
+
 def wpa_to_json(f: TextIO) -> dict:
     settings = {}
     networks = []
@@ -81,7 +85,7 @@ def json_to_wpa(f: TextIO) -> str:
         lines.append('network={')
         for key, value in net.items():
             val = value.strip('"')
-            if key in ('ssid', 'psk'):
+            if key in ('ssid', 'psk') or needs_quoting(val):
                 lines.append(f'\t{key}="{val}"')
             else:
                 lines.append(f'\t{key}={val}')
