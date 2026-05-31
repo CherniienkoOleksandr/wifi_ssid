@@ -1,3 +1,4 @@
+--> sudo install -m 755 my_wifi_switcher /usr/local/bin/my_wifi_switcher
 --> check if wpa
 	--> errrors
 		trap ERR
@@ -6,6 +7,7 @@
 
 *) args
 	help quick instructions
+	arg1 !== -h,-c-,-n,-l
 
 
 
