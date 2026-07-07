@@ -3,60 +3,67 @@
 # Author: al and he
 # Fri May 15 11:12:35 PM EEST 2026
 #
-# require_root "$@"
-convert_to_json() {
-	$py_tool wpa-to-json < $config_file > $wpa_json
-}
-convert_to_config() {
-	$py_tool json-to-wpa < $wpa_json > $config_file
-}
+######## todo
+#	Clear --list and rename to history
+#	Add history clear
 
+set -Eueo pipefail
 #trap "rm -f $temp_file" 0 2 3 15
-#back() {
-    
+# back() {
+
+convert_to_json() { $py_tool wpa-to-json < $config_file > $wpa_json }
+convert_to_config() { $py_tool json-to-wpa < $wpa_json > $config_file }
+restart_service()	{ sudo systemctl reload-or-restart wpa_supplicant@wlp5s0.service; }
+require_root() { [[ $EUID -eq 0 ]] || exec sudo "$0" "$@"; }
+list_exists()		{ if [[ ! -e $known_ssid ]]; then sudo touch $known_ssid && sudo chown "$USER":"$USER" $known_ssid;  fi }
+
 
 wpa_json=$(mktemp /tmp/wpa.json.XXX)
 wpa_tmp_json=$(mktemp /tmp/tmp_wpa.json.XXX)
 config_file=/etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
+known_ssid=/etc/wpa_supplicant/known
 py_tool=/home/al/Git/wifi_ssid/wifi_conf_tool.py
 wifi_man=/home/al/Git/wifi_ssid/ls.1
 #wpa_config_back=/home/al/backups/wpa_supplicant-wlp5s0.conf
 
 
-
-require_root() {
-	[[ $EUID -eq 0 ]] || exec sudo "$0" "$@"
-}
-set -Eueo pipefail
-
 if [ $# != 1 ]; then
-	echo ">>> quick help or see [man ./wifi_ssid] or [-h|--help]"
-	exit 1;
+	echo ">>> see [man ./wifi_ssid] or [-h|--help]"; exit 1;
 else
 	case $1 in
+		-c|--current-ssid)
+			echo current ssid,psk:
+            convert_to_json
+			jq -r '.networks[] | "\(.ssid) \(.psk)"' < "$wpa_json"
+			;;
 		-h|--help)
 			man $wifi_man
 			exit 0
             ;;
+		-l|--list)
+			list_exists
+			if [[ ! -s $known_ssid ]]; then echo "Empty"; exit 0; fi
+			cat $known_ssid
+			;;
 		-n|--new-ssid)
 			require_root "$@"
 			convert_to_json
-			read -p "Enter a ssid: " ssid
-			read -p "Enter a password: " psk
+			read -p ">> Enter new ssid: " ssid
+			read -p ">> Password: " psk
 			jq '(.networks[0]) |=(.ssid="'$ssid'" | .psk="'$psk'")' $wpa_json > $wpa_tmp_json && mv $wpa_tmp_json $wpa_json
-			convert_to_config
-			systemctl --system reload-or-restart wpa_supplicant@wlpp5s0.service
+			convert_to_config;
+			list_exists
+			echo "$ssid:$psk" >> $known_ssid
+			echo ">> Saved to $known_ssid"; sleep 1 
+			echo ">> Restarting" ; sleep 1 
+			restart_service
+			echo "Done."
 			;;
-		-c|--current-ssid)
-			echo current ssid,psk:
-            convert_to_json
-			jq -r '.networks[] | "\(.ssid) \(.psk)"' < $wpa_json
-			;;
-		-l|--list)
-			echo " List, knowns.."
-			;;
+
 		*)
-			echo "check if arg1($1) == known list"
+			# check_if_known
+			# if known, switch to it.
+			# if not, ask for connection (create, current, list)
 			;;
 	esac
 fi

@@ -1,26 +1,26 @@
---> sudo install -m 755 my_wifi_switcher /usr/local/bin/my_wifi_switcher
---> check if wpa
+--> MakeInstall
+	-> sudo install -m 755 my_wifi_switcher /usr/local/bin/my_wifi_switcher
+	-> wpa name @
+		/etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
+		systemctl --system reload-or-restart wpa_supplicant@wlpp5s0.service
+
+--> Обработка ошибок
 	--> errrors
 		trap ERR
 
---> rewrite ./wifi_conf_tool.py
+--> rewrite 
+		./wifi_conf_tool.py
+		implement history
 
-*) args
-	help quick instructions
-	arg1 !== -h,-c-,-n,-l
-
-
-
---> python??
-
+-> quick switch between ssid
+				- list intercation
+				- *)
+				- ? tab completor
+	
 --> man help pager
 	gz extension 
 	/usr/share/man[0-9]
 
--> quick switch between ssid
-	-> tab completor
 
--> list available ssids
 
-/etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
-systemctl --system reload-or-restart wpa_supplicant@wlpp5s0.service
+
