@@ -22,13 +22,13 @@ function finder() {
 	fi
 
 }
-finder
+#finder
 
 function keep_saved() {
 	n_lives=10
 	total_lines=$(wc -l <$file)
 	calc=$((total_lines - n_lives))
-	sed -i "1,${calc}d" $file
+	cat $file | sed "1,${calc}d"
 	echo "keep_saved. Done"
 	sort -u $file -o $file
 }
