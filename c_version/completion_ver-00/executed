@@ -1,0 +1,2 @@
+ sudo install -Dm644 _myutil /usr/share/zsh/site-functions/_myutil
+sudo install -Dm755 myutil /usr/local/bin/myutil

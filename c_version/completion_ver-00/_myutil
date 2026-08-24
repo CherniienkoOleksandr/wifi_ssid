@@ -1,0 +1,8 @@
+#compdef myutil
+
+_arguments -S \
+	 '(-h --help)'{-h,--help}'[Help]' \
+	 '(-p --print)'{-p,--print}'[Print]' \
+	 '(-s --switch)'{-s,--switch}':switch:($(myutil --list-switches))'
+
+
